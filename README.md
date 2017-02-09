@@ -1,4 +1,5 @@
-# mlab-builder
+# mlab-builder [![Test Status](https://travis-ci.org/gfr10598/mlab-builder.svg?branch=master)](https://travis-ci.org/gfr10598/mlab-builder.svg?branch=master)
+
 Docker file for creating mlab builder images.
 
 ## Building
