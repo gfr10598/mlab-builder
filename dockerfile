@@ -1,4 +1,5 @@
 FROM tenforward/centos-i386
+LABEL vendor="measurement-lab" description="slice builder specialized for NDT"
 
 RUN linux32 yum -y update
 RUN linux32 yum install -y wget git svn
