@@ -1,12 +1,28 @@
-sudo: required
+dist: trusty
 language: ruby
 services:
-  - docker
-
+- docker
 before_install:
-  - docker build -t "gfr10598/mlab-builder" .
-  - docker run -v ~/ndt:/root/builder gfr10598/mlab-builder
-
 script:
-  - ls -l ~/ndt
-  - du ~/ndt
+- docker build -t "gfr10598/mlab-builder" .
+- docker run -v ~/ndt:/root/builder gfr10598/mlab-builder
+# TODO - verify that the ndt build was successful
+
+after_success:
+# Push the image out to dockerhub
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- export REPO=gfr10598/mlab-builder
+- export TAG=`if `
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+- docker tag gfr10598/mlab-builder $REPO:$COMMIT
+#  - docker build -f Dockerfile -t $REPO:$COMMIT .
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO
+
+env:
+  global:
+  - secure: MGrLsBk3ykgPhxl26u02IhfyzQfSMb4v/mKNFxl4nbAZ6yHonShnJiQKM8Zy0LRIlWXeyptVnUT4Ba21MzKq4zK7gWY7clTCrS9WQPAjCuWn2gmVbfkrC8psBmZh1jKDUsrXu9yUZ3zGcbG0yz343PGaKs+ey5Vtq+1e41G09QY7M7er3P002dJPCKRfvdQSra/b5RT5LgTYgoz+01rfbJKwptnxfh8858769eWqsKiCzwv/duCJHPRcUhHXVil3Ls6ibNXzbsHlaYDo8AI420V6Apu5f9bDEBeAwSzID6MF+d0H3mXnTk3UB74DYChfQsy0LSivTGTaSmEIipucO8DsbK88DcTiW5kI4qJZ20VF+6CtVgl53jk6GyTmDA3oOSBSMX1fv1DH6Bg+3PihyjLjY0+wPdF8s4K0YNFTWRNXSG5CpUFcIboT7AcZVH0ZS8BD4KYGY0P8GL6G7jKjk2GYFoPu0k/pa9pHRsFBWM6QW8a9Ixbci9ssCTpSZLlK8Rm3oquFJg9UpQRVtlI7op15TTP9C8Uh6steVU8gK7uGVk6dVQ1JDor6tv8PSE1jQXpycA53mCyhQQg2essvGvmn9uu4DvelXfLX7yGQYJca0TB7W6ACVIqHK7sYsJ/+OeQzDFofVrYKBk3BEzhLngOoYKGf38xDD3qUXeZU0EA=
+  - secure: oKbWf1E4SozL9id8baiTaiVkozkOPIo+t10NUdpYuYVwpzsYqWJH3Jq8YlS/nia2RLp4ITnCZhr1dxWh11l8GpqE7BnnydR4kIxCIM2vtAHXgCLbm6iNJihyIyWR8ATyQWQSWI4PEVvgyTlHkJUFls+HaOVzm+XAmPjobJ9ht597pymjr4UP1f7qfXOIZElvmnVtqUkwn6EtHuwXem/k3yPc2yrDN0lhZ6q1Kp7n6nNaK2qz9AF74OrD7xtARBkLf/HqRNwP+z4/O6kf6WK4QNCpAydLRUB5g0LDgoylzCFGkC6tbdQnUuxwi7iYPaJkA32FnC+bIHWhmfhoYk60qF1KEFbsQXK3gLoJWfJRtgJ9YQgEszxagBU1VtSXUwa4wlgC0nJhNDbErWpeErOlC7Azqfg/O7+EYZLWGoWED8FgL+clwWj+MGFe/23oMwehRnufIpo5E/0gZyzPFKf8JFKmNwAqUOFLbWWoA2bbJuK2X/ef5BE6wNoB6484AUPnbQjRu8rAAt9fQ5Gk8H9XEJPP9CG1br/gDGGdTIu3tpWbfVmBOEPSaCb4qJdL1zq14Sg3o2ZnWu/ocjReKXTd9p3Lf9eOcFcNI7f/s1mhaQY+FZsT+gSMfNMfe9KB+L3gqGVXaJcMuLvo6w52SXYOS2gl/MIV03+TkxZfNfiwSLY=
+  - secure: rW887avsKnXZUuF2A30YEiljokIBxgYxAWYmfCIFBrvJuKIeXG8fidjA7d5tAMF6thvmIs90eTQlAb0BgBYyUmZutfeU1elSpzy4bpezgjOcAOzLMLER2FKZJQtiFFLwcy5stXB1QwA0I1OjBUFFGfa7pAUBQPOPAuqsF0P3xLMwhVUBaH4TbKDzFixktWFjHeVYRgA1QGwslmjmTHOMznBAFF53bWOc6i/m+5QxjAWLt9ZtFpHfALNox64RWSb/wAkPBmTzx+n/zrIApx10x/ODNRAQsedl7KabuNU3A56C2DN3+xkwEwZbhDAkkVMKT9+hnC1GkyiPlcLXJ/RygQT/c34/MySXc57tjnEZKU/smqY9XVBEILuhedtRMO1idu+oMMESwT1U3rJtW7N82DNIAk6zR7NuyVe5FVtJY2YUTjPJpE3ZSAckS/kI08XR1aFvtrHh/6dd9nCb8rUOaro5kyGo665EkOzmLcZa9hGhIPnunGM0a+ECQ2W4cl/r3Y9mDuORzP49zbRZaBP9w8MAzOiV3S7PdsGAyRcq+ApHcroPWm5YlMxg7JmFcpdXGCC/JYffv+jhUdH5ZDePwdcaU7sV+7Unq0asZAN5mJOe52svL8tN5BInPVqEfVcrpgTT3FLH1xamT45Xg6UwQCgbKsmmMiqAKsAh8JCuvYI=
+  - COMMIT=${TRAVIS_COMMIT::8}
