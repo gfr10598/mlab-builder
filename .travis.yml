@@ -1,0 +1,11 @@
+sudo: required
+language: ruby
+services:
+  - docker
+
+before_install:
+  - docker build -t "gfr10598/mlab-builder"
+  - docker run -v .:/root/ndt gfr10598/mlab-builder
+
+script:
+  ls -l
