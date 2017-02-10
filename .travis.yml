@@ -3,21 +3,27 @@ language: ruby
 services:
 - docker
 before_install:
+
 script:
 - docker build -t "gfr10598/mlab-builder" .
+# This builds NDT, runs tests, and errors on any failure
 - docker run -v ~/ndt:/root/builder gfr10598/mlab-builder
-# TODO - verify that the ndt build was successful
 
 after_success:
-# Push the image out to dockerhub
-- docker images
-- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-- export REPO=measurementlab/ndt-builder
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
 - docker tag gfr10598/mlab-builder $REPO:$COMMIT
-- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:$TAG  # This may be master instead of latest?
 - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-- docker push $REPO
+
+deploy:
+- provider: script
+  script: $TRAVIS_BUILD_DIR/travis/deploy_image.sh
+  skip_cleanup: true
+  on:
+    repo: gfr10598/mlab-builder
+    # Consider all branches and match using the condition. By default
+    # "all_branches" is false, and the condition is ignored.
+    all_branches: true
+    condition: $TRAVIS_BRANCH == master
 
 env:
   global:
