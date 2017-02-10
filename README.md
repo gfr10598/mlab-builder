@@ -3,21 +3,21 @@
 Docker file for creating mlab builder images.
 
 ## Building
-docker build -t "gfr10598/mlab-builder" .
-
-This creates a docker image called gfr10598/mlab-builder
+To build the docker image and tag it as gfr10598/mlab-builder...
+  docker build https://github.com/gfr10598/mlab-builder
 
 ## Running the builder
 The builder is configured by default to build iupui_ndt.
 
 To do this, after building...
+  docker run -v `pwd`/ndt:/root/builder gfr10598/mlab-builder
 
-docker run -it gfr10598/mlab-builder
+On completion, the newly build NDT code will be available in the ndt subdirectory.
+
 
 ## To build other slices:
-Prevent building the ndt slice by:
-
-docker run -it --entrypoint linux32 gfr10598/mlab-builder bash
+To start a bash shell instead:
+  docker run -ti gfr10598/mlab-builder bash
 
 This will leave you in a 32 bit bash shell.
 

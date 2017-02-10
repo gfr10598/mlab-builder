@@ -11,7 +11,14 @@ RUN linux32 yum install -y --nogpgcheck jansson-devel
 RUN linux32 yum install -y nodejs npm --enablerepo=epel
 
 ADD build_ndt.sh /root/
-ADD build_and_test.sh /root/
 
 # You'll want to run this docker with -ti, otherwise it just exits.
-ENTRYPOINT cd ~; linux32 bash build_and_test.sh; linux32 bash
+# This builds NDT slice by default.  To build NDT and exit, use:
+#   docker run -v `pwd`/ndt:/root/builder imagename
+# On completion, the newly build NDT code will be available in the ndt subdirectory.
+#
+# To start a bash shell instead:
+#   docker run -ti imagename bash
+
+ENTRYPOINT ["linux32"]
+CMD ["/root/build_ndt.sh"]
