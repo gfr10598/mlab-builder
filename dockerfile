@@ -11,6 +11,7 @@ RUN linux32 yum install -y --nogpgcheck jansson-devel
 RUN linux32 yum install -y nodejs npm --enablerepo=epel
 
 ADD build_ndt.sh /root/
+ADD build_and_test.sh /root/
 
 # You'll want to run this docker with -ti, otherwise it just exits.
-ENTRYPOINT cd ~; linux32 bash build_ndt.sh; linux32 bash
+ENTRYPOINT cd ~; linux32 bash build_and_test.sh; linux32 bash
