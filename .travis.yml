@@ -5,6 +5,7 @@ services:
 before_install:
 
 script:
+- $TRAVIS_BUILD_DIR/travis/deploy_image.sh
 - docker build -t "gfr10598/mlab-builder" .
 # This builds NDT, runs tests, and errors on any failure
 - docker run -v ~/ndt:/root/builder gfr10598/mlab-builder
@@ -23,7 +24,6 @@ deploy:
     # Consider all branches and match using the condition. By default
     # "all_branches" is false, and the condition is ignored.
     all_branches: true
-    # A bash-style 'if' condition, matching branches with a "sandbox-" prefix.
     condition: $TRAVIS_BRANCH == master
 
 env:

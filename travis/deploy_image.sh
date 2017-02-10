@@ -4,8 +4,8 @@ set -x
 set -e
 
 # Push the image out to dockerhub
-echo $DOCKER_EMAIL
-echo $DOCKER_USER
+echo 'email is: ' $DOCKER_EMAIL
+echo 'user is:  ' $DOCKER_USER
 docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
 export REPO=measurementlab/ndt-builder
 export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
