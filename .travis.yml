@@ -9,6 +9,11 @@ script:
 # This builds NDT, runs tests, and errors on any failure
 - docker run -v ~/ndt:/root/builder gfr10598/mlab-builder
 
+after_success:
+- docker tag gfr10598/mlab-builder $REPO:$COMMIT
+- docker tag $REPO:$COMMIT $REPO:$TAG  # This may be master instead of latest?
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+
 deploy:
 - provider: script
   script: $TRAVIS_BUILD_DIR/travis/deploy_image.sh
